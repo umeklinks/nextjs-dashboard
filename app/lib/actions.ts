@@ -4,7 +4,7 @@ import { z } from 'zod';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import postgres from 'postgres';
-import { Danfo } from 'next/font/google';
+// import { Danfo } from 'next/font/google';
 import { signIn } from '@/auth';
 import { AuthError } from 'next-auth';
 
@@ -76,7 +76,7 @@ export async function createInvoice(prevState: State, formData: FormData) {
         VALUES (${customerId}, ${amountInCents}, ${status}, ${date})
     `;
     } catch(error) {
-        message: 'Database Error: Failed to Create Invoice.'
+        message: `${error} Database Error: Failed to Create Invoice.`
     }
 
     // Revalidate the cache for the invoices page and redirect the user
@@ -115,7 +115,7 @@ export async function updateInvoice(id: string, prevState: State, formData: Form
         WHERE id = ${id}
     `;
     } catch (error) {
-        message: 'Database Error: Failed to Update Invoice.';
+        message: `${error} Database Error: Failed to Update Invoice.`;
     }
 
     revalidatePath('/dashboard/invoices');
