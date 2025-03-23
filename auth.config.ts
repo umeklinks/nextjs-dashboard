@@ -1,6 +1,6 @@
-import { sign } from "crypto";
+// import { sign } from "crypto";
 import type { NextAuthConfig } from "next-auth";
-import { pages } from "next/dist/build/templates/app-page";
+// import { pages } from "next/dist/build/templates/app-page";
 
 export const authConfig = {
     pages: {

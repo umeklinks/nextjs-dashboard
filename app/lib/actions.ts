@@ -1,6 +1,6 @@
 'use server';
 
-import { z } from 'zod';
+import { object, z } from 'zod';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import postgres from 'postgres';
@@ -124,7 +124,7 @@ export async function updateInvoice(id: string, prevState: State, formData: Form
 }
 
 export async function deleteInvoice(id: string) {
-    throw new Error('Failed to Delete Invoice');
+    // throw new Error('Failed to Delete Invoice');
     await sql`
         DELETE FROM invoices WHERE id = ${id}`;
     revalidatePath('/dashboard/invoices');
@@ -135,17 +135,29 @@ export async function authenticate(
     prevState: string | undefined,
     formData: FormData,
 ){
+    let responseRedirectUrl = null;
     try {
-        await signIn('credentials, formData');
+        console.log('formData', formData);
+        responseRedirectUrl = await signIn('credentials', {
+            ...Object.fromEntries(formData),
+            redirect: false
+        });
+        
     } catch (error) {
-        if (error instanceof AuthError) {
-            switch (error.type) {
-                case 'CredentialsSignin':
-                    return 'Invalid credentials.';
-                default:
-                    return 'Something went wrong.';
-            }
+        console.log('error', error);
+        // if (error instanceof AuthError) {
+        //     switch (error.type) {
+        //         case 'CredentialsSignin':
+        //             return 'Invalid credentials.';
+        //         default:
+        //             return 'Something went wrong.';
+        //     }
+        // }
+        if ((error as Error).message.includes('CrendencialsSignin')) {
+            return'CrendentialsSignin';
         }
         throw error;
+    } finally {
+        if (responseRedirectUrl) redirect(responseRedirectUrl);
     }
 }
